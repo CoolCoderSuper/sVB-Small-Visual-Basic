@@ -117,11 +117,11 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the current label font</param>
         ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size</param>
-        ''' <param name="isBold">True to use a bold font, False otherwise.</param>
-        ''' <param name="isItalic">True to use an italic font, False otherwise.</param>
-        ''' <param name="isUnderlined">True to draw aline under the text, False otherwise.</param>
-        ''' <param name="forecolor">The color of the text. Send Colors.None to use the current label forecolor.</param>
-        ''' <param name="backcolor">The background color of the text. Send Colors.None to use the current label backcolor></param>
+        ''' <param name="isBold">True to use a bold font, False otherwise. Send an empty string to use the current label FontBold value.</param>
+        ''' <param name="isItalic">True to use an italic font, False otherwise. Send an empty string to use the current label FontItalic value.</param>
+        ''' <param name="isUnderlined">True to draw aline under the text, False otherwise. Send an empty string to use the current label Underlined value.</param>
+        ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
+        ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendFormatted(
@@ -132,8 +132,8 @@ Namespace WinForms
                            isBold As Primitive,
                            isItalic As Primitive,
                            isUnderlined As Primitive,
-                           forecolor As Primitive,
-                           backcolor As Primitive,
+                           foreColor As Primitive,
+                           backColor As Primitive,
                            url As Primitive
                     )
 
@@ -166,12 +166,12 @@ Namespace WinForms
                             If isUnderlined Then txtRun.TextDecorations = TextDecorations.Underline
                         End If
 
-                        If forecolor <> Colors.None Then
-                            txtRun.Foreground = Color.GetBrush(forecolor)
+                        If foreColor <> Colors.None Then
+                            txtRun.Foreground = Color.GetBrush(foreColor)
                         End If
 
-                        If backcolor <> Colors.None Then
-                            txtRun.Background = Color.GetBrush(backcolor)
+                        If backColor <> Colors.None Then
+                            txtRun.Background = Color.GetBrush(backColor)
                         End If
 
                         Dim tb = GetTextBlock(labelName)
@@ -197,15 +197,17 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-        Private Shared Function GetAbsUrl(url As String) As String
+        Public Shared Function GetAbsUrl(url As String) As String
             Try
                 If IO.File.Exists(url) OrElse IO.Directory.Exists(url) Then
                     Return IO.Path.GetFullPath(url)
+                ElseIf url.ToLower().StartsWith("www.") Then
+                    Return "https://" & url
                 End If
             Catch
             End Try
 
-            Return url
+            Return Environment.ExpandEnvironmentVariables(url)
         End Function
 
         Private Shared Sub NavigateToLink(sender As Object, e As RequestNavigateEventArgs)
@@ -232,6 +234,7 @@ Namespace WinForms
         ''' Adds the given text at the end of the current label with the given font size.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
+        ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size.</param>
         <ExMethod>
         Public Shared Sub AppendWithFontSize(labelName As Primitive, text As Primitive, fontSize As Primitive)
             AppendFormatted(labelName, text, "", fontSize, "", "", "", Colors.None, Colors.None, "")
@@ -330,35 +333,35 @@ Namespace WinForms
         ''' Adds the given text at the end of the current label with the given for color.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
-        ''' <param name="forecolor">The color of the text. Send Colors.None to use the current label forecolor.</param>
+        ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
         <ExMethod>
-        Public Shared Sub AppendWithForecolor(labelName As Primitive, text As Primitive, forecolor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", forecolor, Colors.None, "")
+        Public Shared Sub AppendWithForeColor(labelName As Primitive, text As Primitive, foreColor As Primitive)
+            AppendFormatted(labelName, text, "", 0, "", "", "", foreColor, Colors.None, "")
         End Sub
 
         ''' <summary>
         ''' Adds the given text at the end of the current label with the given back color.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
-        ''' <param name="backcolor">The background color of the text. Send Colors.None to use the current label backcolor></param>
+        ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         <ExMethod>
-        Public Shared Sub AppendWithBackcolor(labelName As Primitive, text As Primitive, backcolor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, backcolor, "")
+        Public Shared Sub AppendWithBackColor(labelName As Primitive, text As Primitive, backColor As Primitive)
+            AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, backColor, "")
         End Sub
 
         ''' <summary>
         ''' Adds the given text at the end of the current label with the given fore and back colors.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
-        ''' <param name="forecolor">The color of the text. Send Colors.None to use the current label forecolor.</param>
-        ''' <param name="backcolor">The background color of the text. Send Colors.None to use the current label backcolor></param>
+        ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
+        ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         <ExMethod>
-        Public Shared Sub AppendWithColors(labelName As Primitive, text As Primitive, forecolor As Primitive, backcolor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", forecolor, backcolor, "")
+        Public Shared Sub AppendWithColors(labelName As Primitive, text As Primitive, foreColor As Primitive, backColor As Primitive)
+            AppendFormatted(labelName, text, "", 0, "", "", "", foreColor, backColor, "")
         End Sub
 
         ''' <summary>
-        ''' Adds the given text at the end of the current label and formates it as a hyper link that opens the gives url.
+        ''' Adds the given text at the end of the current label and formates it as a hyper link that opens the given url.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
@@ -368,7 +371,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Adds the given text at the end of the current label with a bold font and formates it as a hyper link that opens the gives url.
+        ''' Adds the given text at the end of the current label with a bold font and formates it as a hyper link that opens the given url.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
@@ -378,7 +381,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Adds the given text at the end of the current label with an italic font and formates it as a hyper link that opens the gives url.
+        ''' Adds the given text at the end of the current label with an italic font and formates it as a hyper link that opens the given url.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
@@ -388,10 +391,10 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Adds the given text at the end of the current label with a bold and italic font and formates it as a hyper link that opens the gives url.
+        ''' Adds the given text at the end of the current label with a bold and italic font and formates it as a hyper link that opens the given url.
         ''' </summary>
         ''' <param name="text">The text to add to the label</param>
-        ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
+        ''' <param name="url">The address to navigate to. Use an empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendBoldItalicLink(labelName As Primitive, text As Primitive, url As Primitive)
             AppendFormatted(labelName, text, "", 0, True, True, "", Colors.None, Colors.None, url)
@@ -505,7 +508,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Draws a rectangle shape with the specified width and height on the current array..
+        ''' Draws a rectangle shape with the specified width and height on the current label..
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="width">The width of the rectangle shape.</param>
         ''' <param name="height">The height of the rectangle shape.</param>
@@ -546,7 +550,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws an ellipse shape with the specified width and height on the currentLabel.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="width">The width of the ellipse shape.</param>
         ''' <param name="height">The height of the ellipse shape.</param>
@@ -586,7 +590,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a triangle shape represented by the specified points on the current label.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the first point.</param>
         ''' <param name="y1">The y co-ordinate of the first point.</param>
@@ -634,7 +638,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a polygon shape represented by the given points array on the current label.       
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
         ''' <param name="penColor">The color used to draw the shape outline</param>
@@ -678,7 +682,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a line between the specified two points on the current label.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the first point.</param>
         ''' <param name="y1">The y co-ordinate of the first point.''' </param>
